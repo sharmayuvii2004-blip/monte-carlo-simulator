@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monte Carlo Simulator | Financial Risk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background: #1a1a2e; color: white; font-family: Arial; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        h1 { color: #00adb5; text-align: center; }
+        .box { background: #162447; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        input, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        input { background: #0f3460; border: 2px solid #00adb5; color: white; text-align: center; }
+        button { background: #e84545; border: none; color: white; font-weight: bold; }
+        #result { background: #0f3460; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Monte Carlo Simulator</h1>
+        <div class="box">
+            <input type="number" id="samples" value="5000" placeholder="Samples (100-100000)">
+            <button onclick="runSim()">🎲 Run Simulation</button>
+            <div id="result">
+                <p>Samples: <span id="count">0</span></p>
+                <p>Estimated π: <span id="pi">0.000000</span></p>
+                <p>Actual π: 3.1415926535</p>
+                <p>Error: <span id="error">0.000000</span></p>
+                <p>Points inside: <span id="inside">0</span></p>
+            </div>
+        </div>
+        <p style="text-align: center; color: #888; font-size: 14px;">
+            Financial Risk Analysis Demo | LinkedIn Project
+        </p>
+    </div>
+    <script>
+        function runSim() {
+            let n = parseInt(document.getElementById('samples').value);
+            if (n<100 || n>100000) { alert('Enter 100-100000'); return; }
+            let inside = 0;
+            for(let i=0; i<n; i++) {
+                let x = Math.random(), y = Math.random();
+                if(x*x + y*y <= 1) inside++;
+            }
+            let piEst = (inside/n)*4;
+            document.getElementById('count').innerText = n;
+            document.getElementById('pi').innerText = piEst.toFixed(6);
+            document.getElementById('error').innerText = Math.abs(3.1415926535-piEst).toFixed(6);
+            document.getElementById('inside').innerText = inside;
+            document.getElementById('result').style.display = 'block';
+        }
+        window.onload = () => setTimeout(() => runSim(), 500);
+    </script>
+</body>
+</html>
