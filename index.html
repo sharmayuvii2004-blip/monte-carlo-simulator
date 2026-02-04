@@ -1,54 +1,229 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Monte Carlo Simulator | Financial Risk</title>
+    <title>Monte Carlo Simulator | Financial Risk Analysis</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { background: #1a1a2e; color: white; font-family: Arial; padding: 20px; }
-        .container { max-width: 500px; margin: auto; }
-        h1 { color: #00adb5; text-align: center; }
-        .box { background: #162447; padding: 20px; border-radius: 10px; margin: 20px 0; }
-        input, button { width: 100%; padding: 15px; margin: 10px 0; border-radius: 8px; }
-        input { background: #0f3460; border: 2px solid #00adb5; color: white; text-align: center; }
-        button { background: #e84545; border: none; color: white; font-weight: bold; }
-        #result { background: #0f3460; padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            font-family: Arial, sans-serif; 
+            box-sizing: border-box;
+        }
+        body { 
+            background: #1a1a2e; 
+            color: white; 
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container { 
+            max-width: 500px; 
+            width: 100%;
+            background: #162447;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 { 
+            color: #00adb5; 
+            text-align: center; 
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #b0b0b0;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .input-box {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #00adb5;
+        }
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin-bottom: 15px;
+            border-radius: 8px; 
+            background: #1a1a2e;
+            border: 2px solid #00adb5;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            border-radius: 10px; 
+            background: linear-gradient(to right, #e84545, #ff5252);
+            border: none;
+            color: white; 
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-3px);
+        }
+        .results { 
+            background: #0f3460; 
+            padding: 25px; 
+            border-radius: 10px; 
+            margin-top: 25px;
+            border-left: 5px solid #00adb5;
+            display: none;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .result-label {
+            color: #b0b0b0;
+        }
+        .result-value {
+            color: #00adb5;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #888;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a2e;
+        }
+        .loading {
+            text-align: center;
+            color: #00adb5;
+            margin: 15px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📱 Monte Carlo Simulator</h1>
-        <div class="box">
-            <input type="number" id="samples" value="5000" placeholder="Samples (100-100000)">
-            <button onclick="runSim()">🎲 Run Simulation</button>
-            <div id="result">
-                <p>Samples: <span id="count">0</span></p>
-                <p>Estimated π: <span id="pi">0.000000</span></p>
-                <p>Actual π: 3.1415926535</p>
-                <p>Error: <span id="error">0.000000</span></p>
-                <p>Points inside: <span id="inside">0</span></p>
+        <div class="subtitle">Financial Risk Analysis Demo | Using Monte Carlo Methods</div>
+        
+        <div class="input-box">
+            <input type="number" id="samples" value="5000" min="100" max="1000000" placeholder="Enter samples (100 to 1,000,000)">
+            <button onclick="runMonteCarlo()">🎲 Run Monte Carlo Simulation</button>
+            
+            <div class="loading" id="loading">
+                ⏳ Running simulations... Please wait...
+            </div>
+            
+            <div class="results" id="results">
+                <div class="result-row">
+                    <span class="result-label">Simulations:</span>
+                    <span class="result-value" id="sampleCount">0</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Estimated π:</span>
+                    <span class="result-value" id="estimatedPi">0.000000</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Actual π:</span>
+                    <span class="result-value" id="actualPi">3.1415926535</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Error:</span>
+                    <span class="result-value" id="error">0.000000</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Points inside circle:</span>
+                    <span class="result-value" id="insideCount">0</span>
+                </div>
             </div>
         </div>
-        <p style="text-align: center; color: #888; font-size: 14px;">
-            Financial Risk Analysis Demo | LinkedIn Project
-        </p>
+        
+        <div class="footer">
+            <p>Built with HTML, CSS & JavaScript</p>
+            <p>Monte Carlo Simulation for Financial Risk Analysis</p>
+            <p>LinkedIn Project | Learning by Doing</p>
+        </div>
     </div>
+
     <script>
-        function runSim() {
-            let n = parseInt(document.getElementById('samples').value);
-            if (n<100 || n>100000) { alert('Enter 100-100000'); return; }
-            let inside = 0;
-            for(let i=0; i<n; i++) {
-                let x = Math.random(), y = Math.random();
-                if(x*x + y*y <= 1) inside++;
+        function runMonteCarlo() {
+            // Get input value
+            const samples = parseInt(document.getElementById('samples').value);
+            
+            // Validation
+            if (isNaN(samples) || samples < 100 || samples > 1000000) {
+                alert('Please enter a number between 100 and 1,000,000');
+                document.getElementById('samples').value = '5000';
+                return;
             }
-            let piEst = (inside/n)*4;
-            document.getElementById('count').innerText = n;
-            document.getElementById('pi').innerText = piEst.toFixed(6);
-            document.getElementById('error').innerText = Math.abs(3.1415926535-piEst).toFixed(6);
-            document.getElementById('inside').innerText = inside;
-            document.getElementById('result').style.display = 'block';
+            
+            // Disable button and show loading
+            const button = document.querySelector('button');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '⏳ Calculating...';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            // Use setTimeout to prevent UI freeze
+            setTimeout(() => {
+                let insideCircle = 0;
+                
+                // Monte Carlo Simulation
+                for (let i = 0; i < samples; i++) {
+                    const x = Math.random();
+                    const y = Math.random();
+                    
+                    // Check if point is inside circle (distance <= 1)
+                    if (x * x + y * y <= 1) {
+                        insideCircle++;
+                    }
+                }
+                
+                // Calculate π
+                const estimatedPi = (insideCircle / samples) * 4;
+                const actualPi = Math.PI;
+                const error = Math.abs(actualPi - estimatedPi);
+                
+                // Update results
+                document.getElementById('sampleCount').textContent = samples.toLocaleString();
+                document.getElementById('estimatedPi').textContent = estimatedPi.toFixed(6);
+                document.getElementById('actualPi').textContent = actualPi.toFixed(10);
+                document.getElementById('error').textContent = error.toFixed(6);
+                document.getElementById('insideCount').textContent = insideCircle.toLocaleString();
+                
+                // Show results
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = originalText;
+                
+                // Scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                
+            }, 100);
         }
-        window.onload = () => setTimeout(() => runSim(), 500);
+        
+        // Auto-run on page load
+        window.onload = function() {
+            // Run simulation after 1 second
+            setTimeout(() => {
+                runMonteCarlo();
+            }, 1000);
+        };
     </script>
 </body>
-</html>
+    </html>
+
